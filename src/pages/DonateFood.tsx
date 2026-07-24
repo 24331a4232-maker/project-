@@ -4,7 +4,7 @@ import {
   Utensils, Package, MapPin, Clock, Phone, Image as ImageIcon,
   Loader2, CheckCircle, ArrowLeft, Upload, AlertCircle,
 } from 'lucide-react';
-import { useAuth } from '@/context/useAuth';
+import { useAuth } from '@/context/AuthContext';
 import { supabase, FOOD_TYPES, FoodType } from '@/lib/supabase';
 import PageHeader from '@/components/PageHeader';
 

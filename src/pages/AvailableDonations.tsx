@@ -3,10 +3,10 @@ import { Search, Filter, Loader2, Package, AlertCircle, RefreshCw } from 'lucide
 import { supabase, Donation, FoodType, FOOD_TYPES, FOOD_TYPE_META } from '@/lib/supabase';
 import PageHeader from '@/components/PageHeader';
 import DonationCard from '@/components/DonationCard';
-import { useAuth } from '@/context/useAuth';
+import { useAuth } from '@/context/AuthContext';
 
 export default function AvailableDonations() {
-  const { user, profile } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
   const [donations, setDonations] = useState<Donation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

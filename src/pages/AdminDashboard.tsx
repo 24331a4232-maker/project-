@@ -3,7 +3,7 @@ import {
   Package, Users, Truck, CheckCircle, Loader2, AlertCircle,
   TrendingUp, Search, Trash2, X,
 } from 'lucide-react';
-import { useAuth } from '@/context/useAuth';
+import { useAuth } from '@/context/AuthContext';
 import { supabase, Donation, Profile, STATUS_META, FOOD_TYPE_META, FoodType } from '@/lib/supabase';
 import StatCard from '@/components/StatCard';
 import PageHeader from '@/components/PageHeader';

@@ -4,7 +4,7 @@ import {
   Heart, Mail, Lock, User, Phone, Building, MapPin, Loader2,
   AlertCircle, ArrowRight, Utensils, Truck, Shield,
 } from 'lucide-react';
-import { useAuth } from '@/context/useAuth';
+import { useAuth } from '@/context/AuthContext';
 import { UserRole } from '@/lib/supabase';
 
 export default function Register() {

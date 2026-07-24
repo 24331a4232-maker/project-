@@ -4,7 +4,7 @@ import {
   Package, Truck, CheckCircle, Clock, Loader2, Upload,
   Image as ImageIcon, AlertCircle, ArrowRight, History,
 } from 'lucide-react';
-import { useAuth } from '@/context/useAuth';
+import { useAuth } from '@/context/AuthContext';
 import { supabase, Donation, STATUS_META } from '@/lib/supabase';
 import StatCard from '@/components/StatCard';
 import PageHeader from '@/components/PageHeader';

@@ -1,4 +1,5 @@
-import { MapPin, Clock, Package, User } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { MapPin, Clock, Package, Phone, User } from 'lucide-react';
 import { Donation, FOOD_TYPE_META, STATUS_META } from '@/lib/supabase';
 
 interface DonationCardProps {
