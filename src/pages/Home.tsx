@@ -329,6 +329,35 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ===== LOGO SHOWCASE ===== */}
+      <section className="py-16 bg-gray-50 border-t border-gray-100">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-8">Our Brand Identity</p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-10">
+            {/* Full logo on dark */}
+            <div className="rounded-3xl bg-gradient-to-br from-brand-700 to-emerald-800 p-10 flex flex-col items-center gap-2 shadow-2xl">
+              <img src="/food-bridge-logo.svg" alt="Food Bridge logo" className="w-52 h-52 drop-shadow-xl" />
+              <p className="text-white/60 text-xs mt-1">Dark background</p>
+            </div>
+            {/* Full logo on white */}
+            <div className="rounded-3xl bg-white border-2 border-gray-100 p-10 flex flex-col items-center gap-2 shadow-xl">
+              <img src="/food-bridge-logo.svg" alt="Food Bridge logo" className="w-52 h-52" />
+              <p className="text-gray-400 text-xs mt-1">Light background</p>
+            </div>
+            {/* Icon-only (small favicon size) */}
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-20 h-20 rounded-2xl bg-white border-2 border-gray-100 flex items-center justify-center shadow-lg">
+                <img src="/food-bridge-logo.svg" alt="Food Bridge icon" className="w-14 h-14" />
+              </div>
+              <div className="w-12 h-12 rounded-xl bg-brand-600 flex items-center justify-center shadow-lg">
+                <img src="/food-bridge-logo.svg" alt="Food Bridge favicon" className="w-9 h-9" />
+              </div>
+              <p className="text-gray-400 text-xs">App icon sizes</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ===== CTA ===== */}
       <section className="py-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">

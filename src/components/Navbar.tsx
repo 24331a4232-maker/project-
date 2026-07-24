@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { Heart, Menu, X, LogOut, User as UserIcon, LayoutDashboard } from 'lucide-react';
+import { Menu, X, LogOut, User as UserIcon, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 export default function Navbar() {
@@ -44,12 +44,16 @@ export default function Navbar() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/30 group-hover:scale-110 transition-transform">
-              <Heart className="w-5 h-5 text-white" fill="white" />
-            </div>
+          <Link to="/" className="flex items-center gap-2 group">
+            <img
+              src="/food-bridge-logo.svg"
+              alt="Food Bridge"
+              className="w-10 h-10 group-hover:scale-110 transition-transform"
+            />
             <span className={`font-display font-bold text-lg tracking-tight ${transparent ? 'text-white' : 'text-gray-900'}`}>
-              The Last Plate
+              <span className={transparent ? 'text-white' : 'text-brand-600'}>Food</span>
+              {' '}
+              <span className={transparent ? 'text-accent-300' : 'text-accent-500'}>Bridge</span>
             </span>
           </Link>
 
