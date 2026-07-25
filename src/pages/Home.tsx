@@ -1,417 +1,371 @@
-import { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useInView, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import {
-  ArrowRight, Utensils, Users, Package, Leaf, Heart, Star, ChevronDown,
-  Zap, Shield, Globe, Clock, CheckCircle, TrendingUp, Sparkles, Play
+  ArrowRight, Utensils, Users, Truck, Clock, Shield, MapPin,
+  Heart, TrendingDown, Sparkles, Star, Quote, ChevronRight,
 } from 'lucide-react';
 
-/* ─── Animated counter ─── */
-function Counter({ to, suffix = '' }: { to: number; suffix?: string }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    if (!inView) return;
-    let start = 0;
-    const duration = 1800;
-    const step = to / (duration / 16);
-    const timer = setInterval(() => {
-      start = Math.min(start + step, to);
-      setCount(Math.floor(start));
-      if (start >= to) clearInterval(timer);
-    }, 16);
-    return () => clearInterval(timer);
-  }, [inView, to]);
-
-  return <span ref={ref}>{inView ? count.toLocaleString() : '0'}{suffix}</span>;
-}
-
-/* ─── Section animation wrapper ─── */
-function Reveal({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-60px' });
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 32 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, delay, ease: [0.4, 0, 0.2, 1] }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-const STATS = [
-  { value: 24500, suffix: '+', label: 'Meals Shared',    icon: Utensils,    color: 'text-brand-500',  bg: 'bg-brand-50' },
-  { value: 1200,  suffix: '+', label: 'Volunteers',      icon: Users,       color: 'text-blue-500',   bg: 'bg-blue-50' },
-  { value: 5800,  suffix: '+', label: 'Deliveries',      icon: Package,     color: 'text-accent-500', bg: 'bg-accent-50' },
-  { value: 12,    suffix: 't', label: 'Food Waste Saved', icon: Leaf,        color: 'text-brand-600',  bg: 'bg-brand-50' },
-];
-
-const HOW_STEPS = [
-  { step: '01', icon: Utensils, color: 'bg-brand-500', title: 'Post a Donation', desc: 'Restaurants, hotels, and households list surplus food in under 2 minutes.' },
-  { step: '02', icon: Package,  color: 'bg-accent-500', title: 'Volunteers Claim', desc: 'Trained volunteers receive alerts and claim nearby pickups instantly.' },
-  { step: '03', icon: Heart,    color: 'bg-violet-500', title: 'Food Delivered', desc: 'Meals reach families in need — fresh, safe, and with care.' },
-];
-
-const FEATURES = [
-  { icon: Zap,        color: 'text-amber-500',  bg: 'bg-amber-50',   title: 'Real-time Alerts',    desc: 'Instant notifications to volunteers the moment a donation is posted nearby.' },
-  { icon: Shield,     color: 'text-blue-500',   bg: 'bg-blue-50',    title: 'Food Safety First',   desc: 'Built-in quality checks ensure every meal shared is safe to eat.' },
-  { icon: Globe,      color: 'text-brand-500',  bg: 'bg-brand-50',   title: 'City-wide Network',   desc: 'Donors, volunteers, and recipients all on one connected platform.' },
-  { icon: Clock,      color: 'text-violet-500', bg: 'bg-violet-50',  title: 'Fast Pickup Windows', desc: 'Average pickup time under 45 minutes — no food left behind.' },
-  { icon: TrendingUp, color: 'text-accent-500', bg: 'bg-accent-50',  title: 'Impact Tracking',     desc: 'Dashboards showing your exact contribution to reducing hunger.' },
-  { icon: Leaf,       color: 'text-brand-600',  bg: 'bg-brand-50',   title: 'Zero Waste Mission',  desc: 'Every kilogram rescued is a step toward a sustainable, fair food system.' },
-];
-
-const TESTIMONIALS = [
-  {
-    name: 'Chef Arjun Sharma', role: 'Executive Chef, The Grand Hotel',
-    avatar: 'AS', color: 'from-brand-400 to-brand-600',
-    text: '"Food Bridge transformed how we handle surplus. What used to go in the bin now feeds families every single evening. It takes our team less than 2 minutes to post a donation."',
-  },
-  {
-    name: 'Priya Menon', role: 'Volunteer Coordinator',
-    avatar: 'PM', color: 'from-violet-400 to-violet-600',
-    text: '"I coordinate 40+ volunteers through this platform. The dashboard is intuitive, alerts are instant, and the satisfaction of seeing meals reach families is beyond words."',
-  },
-  {
-    name: 'Ravi Kumar', role: 'NGO Partner – Hope Foundation',
-    avatar: 'RK', color: 'from-accent-400 to-accent-600',
-    text: '"In 6 months, we received over 1,800 meals through Food Bridge. The transparency and reliability is exceptional — this platform genuinely changes lives."',
-  },
-];
-
-const FLOATING_ICONS = [
-  { Icon: Utensils, x: '8%',  y: '22%', delay: 0,    size: 'w-10 h-10', color: 'text-brand-400', bg: 'bg-brand-500/10' },
-  { Icon: Heart,    x: '88%', y: '18%', delay: 1.2,  size: 'w-8 h-8',  color: 'text-red-400',   bg: 'bg-red-500/10' },
-  { Icon: Leaf,     x: '82%', y: '72%', delay: 0.6,  size: 'w-9 h-9',  color: 'text-brand-300', bg: 'bg-brand-500/10' },
-  { Icon: Star,     x: '6%',  y: '75%', delay: 1.8,  size: 'w-8 h-8',  color: 'text-amber-300', bg: 'bg-amber-500/10' },
-  { Icon: Sparkles, x: '50%', y: '8%',  delay: 0.9,  size: 'w-7 h-7',  color: 'text-violet-300',bg: 'bg-violet-500/10' },
-];
-
 export default function Home() {
-  const heroRef = useRef(null);
-  const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
-  const heroY    = useTransform(scrollYProgress, [0, 1], [0, 80]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const stats = [
+    { icon: Utensils, value: '24,500+', label: 'Meals Rescued', color: 'text-brand-600', bg: 'bg-brand-50' },
+    { icon: Users, value: '1,200+', label: 'Active Volunteers', color: 'text-accent-600', bg: 'bg-accent-50' },
+    { icon: Truck, value: '5,800+', label: 'Deliveries Made', color: 'text-blue-600', bg: 'bg-blue-50' },
+    { icon: TrendingDown, value: '12 Tons', label: 'Food Waste Reduced', color: 'text-purple-600', bg: 'bg-purple-50' },
+  ];
+
+  const steps = [
+    {
+      icon: Utensils,
+      title: 'Donor Posts Food',
+      desc: 'Hotels, restaurants, and event organizers post surplus food with pickup details and expiry times.',
+      color: 'from-brand-500 to-brand-700',
+      step: '01',
+    },
+    {
+      icon: Users,
+      title: 'Volunteer Claims',
+      desc: 'Nearby volunteers browse available donations and claim the ones they can pick up and deliver.',
+      color: 'from-accent-500 to-accent-700',
+      step: '02',
+    },
+    {
+      icon: Heart,
+      title: 'Food Reaches Needy',
+      desc: 'Volunteers pick up the food and deliver it to shelters, families, and individuals who need it most.',
+      color: 'from-emerald-500 to-teal-700',
+      step: '03',
+    },
+  ];
+
+  const features = [
+    { icon: Clock, title: 'Real-Time Coordination', desc: 'Live donation status updates from posting to delivery, so nothing falls through the cracks.' },
+    { icon: Shield, title: 'Verified Community', desc: 'Every donor and volunteer is authenticated, building trust across the entire platform.' },
+    { icon: MapPin, title: 'Location-Based Matching', desc: 'Volunteers see donations near them, minimizing travel time and maximizing freshness.' },
+    { icon: Sparkles, title: 'Easy Image Upload', desc: 'Donors upload food photos so volunteers know exactly what they are picking up.' },
+    { icon: Truck, title: 'Proof of Delivery', desc: 'Volunteers upload delivery confirmation photos, closing the loop on every donation.' },
+    { icon: Heart, title: 'Impact Tracking', desc: 'Dashboards show meals saved, waste reduced, and lives touched — in real numbers.' },
+  ];
+
+  const testimonials = [
+    {
+      name: 'Sarah Mitchell',
+      role: 'Restaurant Owner',
+      avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=200',
+      text: 'We used to throw away trays of food every night. Now volunteers pick it up within an hour. It feels amazing to feed people instead of trash cans.',
+      rating: 5,
+    },
+    {
+      name: 'James Okoro',
+      role: 'Volunteer Courier',
+      avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=200',
+      text: 'I deliver on my way home from work. Three trips a week, about 40 meals each. Knowing where that food goes makes every minute worth it.',
+      rating: 5,
+    },
+    {
+      name: 'Maria Santos',
+      role: 'Shelter Coordinator',
+      avatar: 'https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=200',
+      text: 'The Last Plate has become a lifeline for our shelter. Fresh, hot meals arrive regularly. The proof-of-delivery system gives us total confidence.',
+      rating: 5,
+    },
+  ];
 
   return (
-    <div className="overflow-hidden">
-
-      {/* ════════════════════════════════════════
-          HERO
-      ════════════════════════════════════════ */}
-      <section ref={heroRef} className="relative min-h-screen flex flex-col justify-center hero-bg overflow-hidden">
-        {/* Animated gradient orbs */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <motion.div
-            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute top-1/4 -left-32 w-96 h-96 rounded-full bg-brand-500/20 blur-3xl"
-          />
-          <motion.div
-            animate={{ scale: [1.2, 1, 1.2], opacity: [0.2, 0.4, 0.2] }}
-            transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
-            className="absolute bottom-1/4 -right-32 w-80 h-80 rounded-full bg-accent-500/20 blur-3xl"
-          />
-          <motion.div
-            animate={{ scale: [1, 1.3, 1], opacity: [0.15, 0.3, 0.15] }}
-            transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut', delay: 4 }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-violet-500/10 blur-3xl"
-          />
+    <div>
+      {/* ===== HERO ===== */}
+      <section className="relative min-h-screen flex items-center overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-600 via-brand-700 to-emerald-800" />
+        <div
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage:
+              'radial-gradient(circle at 20% 30%, rgba(255,255,255,0.3) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(249,115,22,0.2) 0%, transparent 50%)',
+          }}
+        />
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-brand-400/20 rounded-full blur-3xl animate-pulse-slow" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent-500/20 rounded-full blur-3xl animate-pulse-slow" />
         </div>
 
-        {/* Floating icons */}
-        {FLOATING_ICONS.map(({ Icon, x, y, delay, size, color, bg }, i) => (
-          <motion.div
-            key={i}
-            style={{ position: 'absolute', left: x, top: y }}
-            animate={{ y: [-10, 10, -10], rotate: [-5, 5, -5] }}
-            transition={{ duration: 5 + i, repeat: Infinity, ease: 'easeInOut', delay }}
-            className={`w-14 h-14 rounded-2xl ${bg} backdrop-blur-sm border border-white/10 flex items-center justify-center hidden lg:flex`}
-          >
-            <Icon className={`${size} ${color}`} />
-          </motion.div>
-        ))}
-
-        {/* Hero content */}
-        <motion.div
-          style={{ y: heroY, opacity: heroOpacity }}
-          className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 text-center"
-        >
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1, duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white/80 text-sm font-medium mb-8"
-          >
-            <span className="w-2 h-2 rounded-full bg-brand-400 animate-pulse" />
-            Connecting food donors with families in need
-            <Sparkles className="w-3.5 h-3.5 text-brand-400" />
-          </motion.div>
-
-          {/* Headline */}
-          <motion.h1
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
-            className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold text-white leading-[1.05] tracking-tight mb-6"
-          >
-            Share{' '}
-            <span className="relative">
-              <span className="text-gradient-green">Food.</span>
-            </span>
-            <br />
-            Share{' '}
-            <span className="text-gradient-orange">Hope.</span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className="text-lg sm:text-xl text-white/65 max-w-2xl mx-auto leading-relaxed mb-10"
-          >
-            Food Bridge is the platform where restaurants, hotels, and households donate surplus meals — and volunteers bring them to families who need it most.
-          </motion.p>
-
-          {/* CTA buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.55, duration: 0.6 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-          >
-            <Link to="/register" className="btn-primary text-base px-8 py-4 shadow-2xl shadow-brand-500/40">
-              Start Donating Free
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-            <Link to="/donations" className="btn-glass text-base px-8 py-4">
-              <Play className="w-4 h-4" />
-              Browse Available Food
-            </Link>
-          </motion.div>
-
-          {/* Floating logo */}
-          <motion.div
-            animate={{ y: [-12, 12, -12] }}
-            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-            className="mt-16 inline-block"
-          >
-            <div className="w-32 h-32 mx-auto rounded-3xl bg-white/10 backdrop-blur-md border border-white/15 flex items-center justify-center shadow-2xl shadow-black/30">
-              <img src="/food-bridge-logo.svg" alt="Food Bridge" className="w-24 h-24" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 w-full">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="text-white space-y-6 animate-fade-in-up">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-sm font-medium">
+                <span className="w-2 h-2 rounded-full bg-accent-400 animate-pulse" />
+                Fighting hunger, one plate at a time
+              </div>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] font-display">
+                Don't Waste Food.{' '}
+                <span className="text-accent-400">Share Hope.</span>
+              </h1>
+              <p className="text-lg text-brand-50 max-w-xl leading-relaxed">
+                The Last Plate Project connects hotels, restaurants, and event
+                organizers with volunteers who collect surplus food and deliver
+                it to people in need — in real time.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Link
+                  to="/register"
+                  className="px-7 py-3.5 rounded-xl bg-white text-brand-700 font-semibold hover:bg-brand-50 transition-all hover:-translate-y-0.5 shadow-xl flex items-center gap-2"
+                >
+                  Join the Movement <ArrowRight className="w-5 h-5" />
+                </Link>
+                <Link
+                  to="/donations"
+                  className="px-7 py-3.5 rounded-xl bg-white/10 backdrop-blur-sm text-white font-semibold border border-white/30 hover:bg-white/20 transition-all hover:-translate-y-0.5"
+                >
+                  Browse Donations
+                </Link>
+              </div>
             </div>
-          </motion.div>
-        </motion.div>
 
-        {/* Scroll hint */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/40 text-xs"
-        >
-          <span>Scroll to explore</span>
-          <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
-            <ChevronDown className="w-5 h-5" />
-          </motion.div>
-        </motion.div>
+            <div className="relative animate-scale-in">
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl aspect-[4/3]">
+                <img
+                  src="https://images.pexels.com/photos/6210748/pexels-photo-6210748.jpeg?auto=compress&cs=tinysrgb&w=800"
+                  alt="Volunteers packing surplus food"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+              </div>
+              {/* Floating cards */}
+              <div className="absolute -bottom-5 -left-5 bg-white rounded-2xl shadow-xl p-4 max-w-[200px] animate-float">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center">
+                    <Utensils className="w-5 h-5 text-brand-600" />
+                  </div>
+                  <div>
+                    <p className="text-xl font-bold text-gray-900">24,500+</p>
+                    <p className="text-xs text-gray-500">meals rescued</p>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute -top-5 -right-5 bg-white rounded-2xl shadow-xl p-4 max-w-[200px] animate-float" style={{ animationDelay: '1s' }}>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-accent-100 flex items-center justify-center">
+                    <Heart className="w-5 h-5 text-accent-600" fill="currentColor" />
+                  </div>
+                  <div>
+                    <p className="text-xl font-bold text-gray-900">1,200+</p>
+                    <p className="text-xs text-gray-500">volunteers</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Wave divider */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg viewBox="0 0 1440 100" fill="none" className="w-full h-auto">
+            <path d="M0 100V40C240 80 480 100 720 80C960 60 1200 20 1440 40V100H0Z" fill="white" />
+          </svg>
+        </div>
       </section>
 
-      {/* ════════════════════════════════════════
-          STATS
-      ════════════════════════════════════════ */}
-      <section className="relative bg-surface-50 py-16 overflow-hidden">
-        <div className="absolute inset-0 bg-mesh-green opacity-50 pointer-events-none" />
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* ===== STATS ===== */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {STATS.map(({ value, suffix, label, icon: Icon, color, bg }, i) => (
-              <Reveal key={label} delay={i * 0.1}>
-                <motion.div
-                  whileHover={{ y: -6, scale: 1.03 }}
-                  className="card p-6 text-center group card-hover"
-                >
-                  <div className={`w-14 h-14 ${bg} rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}>
-                    <Icon className={`w-7 h-7 ${color}`} />
-                  </div>
-                  <p className={`text-3xl lg:text-4xl font-bold ${color} mb-1`}>
-                    <Counter to={value} suffix={suffix} />
-                  </p>
-                  <p className="text-sm text-surface-300 font-medium">{label}</p>
-                </motion.div>
-              </Reveal>
+            {stats.map((stat, i) => (
+              <div
+                key={i}
+                className="text-center p-6 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-lg transition-all border border-gray-100"
+              >
+                <div className={`w-12 h-12 rounded-xl ${stat.bg} flex items-center justify-center mx-auto mb-4`}>
+                  <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                </div>
+                <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+                <p className="text-sm text-gray-500 mt-1">{stat.label}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ════════════════════════════════════════
-          HOW IT WORKS
-      ════════════════════════════════════════ */}
+      {/* ===== ABOUT SECTION ===== */}
+      <section className="section-padding bg-gradient-to-b from-white to-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="relative">
+              <div className="rounded-3xl overflow-hidden shadow-xl aspect-square">
+                <img
+                  src="https://images.pexels.com/photos/6646917/pexels-photo-6646917.jpeg?auto=compress&cs=tinysrgb&w=600"
+                  alt="Community food sharing"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="absolute -bottom-6 -right-6 bg-brand-600 text-white rounded-2xl shadow-xl p-6 max-w-[240px] hidden sm:block">
+                <p className="text-3xl font-bold">1/3</p>
+                <p className="text-sm text-brand-100 mt-1">of all food produced globally is wasted. We're changing that.</p>
+              </div>
+            </div>
+            <div>
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-100 text-brand-700 text-sm font-medium mb-4">
+                <Sparkles className="w-4 h-4" /> Our Mission
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 font-display">
+                Bridging the gap between surplus and need
+              </h2>
+              <p className="text-gray-600 leading-relaxed mb-6">
+                Every day, tons of perfectly good food ends up in dumpsters while
+                millions go hungry. The Last Plate Project is a technology-driven
+                platform that makes it effortless to redirect surplus food to the
+                people who need it most — before it's too late.
+              </p>
+              <div className="space-y-4">
+                {[
+                  { icon: Utensils, text: 'Real-time donation matching between donors and volunteers' },
+                  { icon: Shield, text: 'Verified, authenticated community of trusted participants' },
+                  { icon: TrendingDown, text: 'Measurable impact tracking — meals saved, waste reduced' },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-brand-50 flex items-center justify-center flex-shrink-0">
+                      <item.icon className="w-5 h-5 text-brand-600" />
+                    </div>
+                    <p className="text-gray-700 pt-1.5">{item.text}</p>
+                  </div>
+                ))}
+              </div>
+              <Link to="/about" className="mt-8 inline-flex items-center gap-2 text-brand-600 font-semibold hover:gap-3 transition-all">
+                Learn more about us <ChevronRight className="w-5 h-5" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== HOW IT WORKS ===== */}
       <section className="section-padding bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Reveal className="text-center mb-16">
-            <span className="badge-green mb-4">How It Works</span>
-            <h2 className="text-4xl lg:text-5xl font-bold text-surface-dark mt-3 mb-4">
-              Simple. Fast. <span className="text-gradient-green">Impactful.</span>
-            </h2>
-            <p className="text-surface-300 text-lg max-w-xl mx-auto">
-              Three steps from surplus food on a shelf to a warm meal on a family's table.
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent-100 text-accent-700 text-sm font-medium mb-4">
+              <Truck className="w-4 h-4" /> Simple Process
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 font-display">How It Works</h2>
+            <p className="text-gray-500 mt-3 max-w-2xl mx-auto">
+              Three simple steps turn surplus food into someone's next meal.
             </p>
-          </Reveal>
-
-          <div className="grid md:grid-cols-3 gap-8 relative">
-            {/* Connector line */}
-            <div className="hidden md:block absolute top-12 left-1/3 right-1/3 h-px bg-gradient-to-r from-brand-300 via-accent-300 to-violet-300 -translate-x-0" />
-
-            {HOW_STEPS.map(({ step, icon: Icon, color, title, desc }, i) => (
-              <Reveal key={step} delay={i * 0.15}>
-                <motion.div
-                  whileHover={{ y: -8 }}
-                  className="card p-8 text-center group card-hover relative"
-                >
-                  <div className={`w-16 h-16 ${color} rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
-                    <Icon className="w-8 h-8 text-white" />
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {steps.map((step, i) => (
+              <div key={i} className="relative group">
+                <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all">
+                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${step.color} flex items-center justify-center mb-5 shadow-lg`}>
+                    <step.icon className="w-8 h-8 text-white" />
                   </div>
-                  <div className="absolute top-4 right-4 text-5xl font-black text-surface-100 select-none">{step}</div>
-                  <h3 className="text-xl font-bold text-surface-dark mb-3">{title}</h3>
-                  <p className="text-surface-300 leading-relaxed text-sm">{desc}</p>
-                </motion.div>
-              </Reveal>
+                  <p className="text-5xl font-bold text-gray-100 absolute top-4 right-6 font-display">{step.step}</p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 relative">{step.title}</h3>
+                  <p className="text-gray-500 leading-relaxed relative">{step.desc}</p>
+                </div>
+                {i < steps.length - 1 && (
+                  <div className="hidden md:flex absolute top-1/2 -right-4 -translate-y-1/2 z-10">
+                    <ArrowRight className="w-6 h-6 text-gray-300" />
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ════════════════════════════════════════
-          FEATURES
-      ════════════════════════════════════════ */}
-      <section className="section-padding bg-surface-50 relative overflow-hidden">
-        <div className="absolute inset-0 bg-mesh-green opacity-40 pointer-events-none" />
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Reveal className="text-center mb-16">
-            <span className="badge-orange mb-4">Platform Features</span>
-            <h2 className="text-4xl lg:text-5xl font-bold text-surface-dark mt-3 mb-4">
-              Built for <span className="text-gradient-orange">Impact</span>
-            </h2>
-            <p className="text-surface-300 text-lg max-w-xl mx-auto">
-              Every feature designed to make food sharing faster, safer, and more impactful.
+      {/* ===== FEATURES ===== */}
+      <section className="section-padding bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-100 text-brand-700 text-sm font-medium mb-4">
+              <Sparkles className="w-4 h-4" /> Platform Features
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 font-display">Everything you need to make a difference</h2>
+            <p className="text-gray-500 mt-3 max-w-2xl mx-auto">
+              Powerful tools designed to make food donation effortless and transparent.
             </p>
-          </Reveal>
-
+          </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {FEATURES.map(({ icon: Icon, color, bg, title, desc }, i) => (
-              <Reveal key={title} delay={i * 0.08}>
-                <motion.div
-                  whileHover={{ y: -6, scale: 1.02 }}
-                  className="card p-7 card-hover group"
-                >
-                  <div className={`w-12 h-12 ${bg} rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
-                    <Icon className={`w-6 h-6 ${color}`} />
-                  </div>
-                  <h3 className="font-bold text-surface-dark text-lg mb-2">{title}</h3>
-                  <p className="text-surface-300 text-sm leading-relaxed">{desc}</p>
-                </motion.div>
-              </Reveal>
+            {features.map((feature, i) => (
+              <div key={i} className="card p-6 card-hover">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center mb-4 shadow-lg shadow-brand-500/20">
+                  <feature.icon className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="font-bold text-lg text-gray-900 mb-2">{feature.title}</h3>
+                <p className="text-gray-500 leading-relaxed text-sm">{feature.desc}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ════════════════════════════════════════
-          TESTIMONIALS
-      ════════════════════════════════════════ */}
+      {/* ===== TESTIMONIALS ===== */}
       <section className="section-padding bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Reveal className="text-center mb-16">
-            <span className="badge-blue mb-4">Testimonials</span>
-            <h2 className="text-4xl lg:text-5xl font-bold text-surface-dark mt-3 mb-4">
-              Real Stories, <span className="text-gradient-green">Real Impact</span>
-            </h2>
-          </Reveal>
-
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent-100 text-accent-700 text-sm font-medium mb-4">
+              <Star className="w-4 h-4" /> Stories
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 font-display">Voices from our community</h2>
+            <p className="text-gray-500 mt-3 max-w-2xl mx-auto">
+              Real people, real impact. Hear from donors, volunteers, and recipients.
+            </p>
+          </div>
           <div className="grid md:grid-cols-3 gap-6">
-            {TESTIMONIALS.map(({ name, role, avatar, color, text }, i) => (
-              <Reveal key={name} delay={i * 0.12}>
-                <motion.div
-                  whileHover={{ y: -6 }}
-                  className="card p-7 card-hover relative"
-                >
-                  <div className="flex mb-4">
-                    {[...Array(5)].map((_, j) => (
-                      <Star key={j} className="w-4 h-4 fill-amber-400 text-amber-400" />
+            {testimonials.map((t, i) => (
+              <div key={i} className="card p-6 card-hover">
+                <Quote className="w-8 h-8 text-brand-200 mb-4" fill="currentColor" />
+                <p className="text-gray-700 leading-relaxed mb-6 italic">"{t.text}"</p>
+                <div className="flex items-center gap-3">
+                  <img src={t.avatar} alt={t.name} className="w-12 h-12 rounded-full object-cover" />
+                  <div>
+                    <p className="font-semibold text-gray-900">{t.name}</p>
+                    <p className="text-sm text-gray-500">{t.role}</p>
+                  </div>
+                  <div className="ml-auto flex gap-0.5">
+                    {Array.from({ length: t.rating }).map((_, j) => (
+                      <Star key={j} className="w-4 h-4 text-accent-500" fill="currentColor" />
                     ))}
                   </div>
-                  <p className="text-surface-300 text-sm leading-relaxed mb-6 italic">{text}</p>
-                  <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center text-white text-sm font-bold`}>
-                      {avatar}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-surface-dark text-sm">{name}</p>
-                      <p className="text-xs text-surface-300">{role}</p>
-                    </div>
-                  </div>
-                  <div className="absolute top-6 right-6 text-6xl text-surface-100 font-serif leading-none select-none">"</div>
-                </motion.div>
-              </Reveal>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ════════════════════════════════════════
-          MISSION BANNER
-      ════════════════════════════════════════ */}
-      <section className="relative py-24 hero-bg overflow-hidden">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
-            className="absolute -top-48 -right-48 w-96 h-96 rounded-full border border-white/5"
-          />
-          <motion.div
-            animate={{ rotate: -360 }}
-            transition={{ duration: 45, repeat: Infinity, ease: 'linear' }}
-            className="absolute -bottom-48 -left-48 w-80 h-80 rounded-full border border-white/5"
-          />
-        </div>
-
-        <div className="relative max-w-4xl mx-auto px-4 text-center">
-          <Reveal>
-            <motion.div
-              animate={{ y: [-6, 6, -6] }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-              className="w-20 h-20 mx-auto mb-8 rounded-3xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center"
-            >
-              <img src="/food-bridge-logo.svg" alt="Food Bridge" className="w-14 h-14" />
-            </motion.div>
-            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-5 leading-tight">
-              Together We Can End<br />
-              <span className="text-gradient-green">Food Waste</span> &{' '}
-              <span className="text-gradient-orange">Hunger</span>
-            </h2>
-            <p className="text-white/60 text-lg mb-10 max-w-xl mx-auto">
-              Join thousands of donors and volunteers already making a difference across India. It's free, it's fast, and it changes lives.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/register" className="btn-primary text-base px-8 py-4 shadow-2xl shadow-brand-500/40">
-                Join Food Bridge
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-              <Link to="/donations" className="btn-glass text-base px-8 py-4">
-                Browse Donations
-              </Link>
+      {/* ===== CTA ===== */}
+      <section className="py-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-brand-600 to-emerald-800 p-10 sm:p-16 text-center">
+            <div
+              className="absolute inset-0 opacity-20"
+              style={{
+                backgroundImage:
+                  'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.3) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(249,115,22,0.2) 0%, transparent 50%)',
+              }}
+            />
+            <div className="relative">
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-display">
+                Ready to make a difference?
+              </h2>
+              <p className="text-brand-50 text-lg max-w-2xl mx-auto mb-8">
+                Whether you have food to spare or time to give, your contribution
+                feeds someone in your community today.
+              </p>
+              <div className="flex flex-wrap gap-4 justify-center">
+                <Link
+                  to="/register"
+                  className="px-7 py-3.5 rounded-xl bg-white text-brand-700 font-semibold hover:bg-brand-50 transition-all hover:-translate-y-0.5 shadow-xl flex items-center gap-2"
+                >
+                  Get Started Free <ArrowRight className="w-5 h-5" />
+                </Link>
+                <Link
+                  to="/contact"
+                  className="px-7 py-3.5 rounded-xl bg-white/10 backdrop-blur-sm text-white font-semibold border border-white/30 hover:bg-white/20 transition-all hover:-translate-y-0.5"
+                >
+                  Contact Us
+                </Link>
+              </div>
             </div>
-          </Reveal>
+          </div>
         </div>
       </section>
-
     </div>
   );
 }
